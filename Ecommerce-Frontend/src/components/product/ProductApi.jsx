@@ -10,18 +10,29 @@ export async function fetchAllProducts() {
   }
 }
 
-export async function fetchProductsByFilters(filter) {
-  // filter = {"category":"smartphone"};
-  console.log(filter);
+export async function fetchProductsByFilters(filter, sort) {
+  // filter = {"category":["smartphone","laptops"]}
+  // sort = {_sort:"price",_order="desc"}
+
   let queryString = "";
   for (let key in filter) {
-    queryString += `${key}=${filter[key]}&`;
+    const categoryValues = filter[key];
+    console.log(categoryValues);
+    if (categoryValues.length) {
+      const lastCategoryValues = categoryValues[categoryValues.length - 1];
+      console.log(lastCategoryValues);
+      queryString = queryString + `${key}=${lastCategoryValues}&`;
+    }
+  }
+
+  for (let key in sort) {
+    queryString = queryString + `${key}=${sort[key]}&`;
   }
 
   try {
     console.log(queryString);
     const response = await axios.get(
-      "http://localhost:3000/products?"+queryString
+      "http://localhost:3000/products?" + queryString
     );
     return { data: response.data };
   } catch (error) {
@@ -30,3 +41,23 @@ export async function fetchProductsByFilters(filter) {
   }
 }
 // http://localhost:3000/products?category=smartphone
+
+export async function fetchCategories() {
+  try {
+    console.log("Fetching categories");
+    const response = await axios.get("http://localhost:3000/categories");
+    return { data: response.data };
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function fetchBrands() {
+  try {
+    console.log("Fetching brands");
+    const response = await axios.get("http://localhost:3000/brands");
+    return { data: response.data };
+  } catch (err) {
+    console.log(err);
+  }
+}
